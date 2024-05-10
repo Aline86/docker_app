@@ -1,0 +1,26 @@
+{
+  "name": "docker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "localhost:8080/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "http": "^0.0.1-security",
+    "mysql2": "^3.9.7",
+    "querystring": "^0.2.1",
+    "remove": "^0.1.5",
+    "require": "^0.4.4",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,70 @@
+body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+
+}
+
+
+
+
+.title_background h1 {
+    color: lightblue;
+}
+
+#input_name {
+    width: 90%;
+    height: 25px;
+    border: 1px solid lightgray;
+}
+
+#input_value {
+    max-height: 180px;
+    overflow: auto;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 5px;
+
+}
+
+#input_value div {
+    padding: 5px;
+    border-bottom: 1px solid lightgray;
+
+}
+
+#input_value div:last-child {
+  
+    border-bottom: none!important;
+}
+.recherche_title {
+    text-align: left;
+    margin-left: 5%;
+    margin-bottom: 10px;
+}
+
+
+.none {
+    display: none;
+}
+
+
+
+@media screen and (max-width: 380px) {
+    .container {
+        width: 100%;
+    }
+    #input_name {
+        width: 100%;
+    }
+    #input_value {
+        width: 100%;
+    }
+
+}
