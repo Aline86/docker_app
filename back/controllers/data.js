@@ -2,10 +2,13 @@ const http = require('http');
 const express = require('express');
 const mysql = require('mysql2');
 const { insertQuery } = require("../db/loadquery")
-const db = mysql.createConnection({ host: "mysqldb",   user: "root",   password: "root" , database: 'abrege'});
+const { ResultsData } = require('../models/resultdata');
+const { webhookID, webhookToken, pappersToken, db_host, db_name, db_username, db_password} = require('../config');
+const db = mysql.createConnection({ host: db_host,   user: db_password,   password: db_username , database: db_name});
 const app = express();
 const { Server } = require('socket.io');
-const { webhookID, webhookToken, pappersToken} = require('../config');
+
+
 // Connection au tunnel socket pour l'envoi des statuts des requêtes
 const io = new Server(447, {
     cors: {
@@ -31,7 +34,6 @@ exports.getData = async (req, res) => {
             resp.on('data', (chunk) => {
                 data += chunk;
             });
-            console.log(data)
             resp.on('end', () => {
                 res.send(JSON.stringify(data));
                 io.emit('status', 'returnFirmDataFromHookToFront http request : status finished.');
@@ -85,8 +87,6 @@ getFirmDataFromHook = async (res) => {
 }
 // Code pour évolution du projet, test pour mettre en bdd // méthode non utilisée dans le cas présent
 postToBDD = async (data) => {
-    console.log("element", data);
-    
     await db.connect(function(err) {
         if (err) throw err;
         console.log("Connected!");
@@ -153,7 +153,9 @@ exports.getFirmDataFromAPI = async (req, res) => {
 
 getFirmDataManagersFromAPI = async (data_begin, req, res) => {
     let data_array = [];
-    data_array.push(data_begin);
+    
+    let resultArray = new ResultsData(data_begin);
+
     // envoi du statut de la requête http via le socket au front
     io.emit('status', 'start getFirmDataManagersFromAPI http request : status in progress.');
 
@@ -171,7 +173,8 @@ getFirmDataManagersFromAPI = async (data_begin, req, res) => {
         referrerPolicy: "no-referrer", 
       }).then(response => response.json())
       .then(data => {
-        getManagerFirms(data, res, data_array)
+
+        getManagerFirms(data, res, resultArray)
     })
     .catch(err => console.error(err));
 }
@@ -184,8 +187,9 @@ getManagerFirms = async (data_begin, res, entreprise_racine_array) => {
 
 resultSendTooHook = async (data_begin, entreprise_racine_array, res) => {
     let promises = [];
-    let dataPromiseResult = []
-    dataPromiseResult.push(entreprise_racine_array)
+    entreprise_racine_array.directors = []
+
+    //dataPromiseResult.push(entreprise_racine_array)
     data_begin.resultats.forEach(elem => { elem 
         // code qui fait en sorte d'attendre que toutes les requêtes soient exécutées avant de poster le résultat sur le webhook
         promises.push(
@@ -204,8 +208,10 @@ resultSendTooHook = async (data_begin, entreprise_racine_array, res) => {
                 referrerPolicy: "no-referrer", 
             }).then(response => response.json())
             .then(data_child => {
-                dataPromiseResult.push(elem)
-                dataPromiseResult.push(data_child)
+                
+                entreprise_racine_array.directors.push(elem)
+                entreprise_racine_array.directors.push(data_child)
+               // result.push(data_child)
             })
         )
     })
@@ -214,8 +220,7 @@ resultSendTooHook = async (data_begin, entreprise_racine_array, res) => {
         promises
     )
     .then((results) => {
-        console.log(dataPromiseResult)
-        postFirmDataToHook(dataPromiseResult, res)
+        postFirmDataToHook(entreprise_racine_array, res)
     })
     .catch((error) => {
         console.log(error)

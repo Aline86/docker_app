@@ -31,16 +31,17 @@ class FirmData {
 
     returnData = () => {
         self = this
-        this.getData().then(response => response.json()).then(response => {
-            response = JSON.parse(response);
-            self.returnTemplate(response)
-            
-        })
         socket.on('status', (msg) => {
             document.getElementById("data").innerHTML += "<br /><h3>" + msg + "</h3>";
         })
+        this.getData().then(response => response.json()).then(response => {
+            response = JSON.parse(response);
+            
+            self.returnTemplate(response)
+            
+        })
+       
     }
-
 
     getFirmData = () => {
         self = this
@@ -53,7 +54,7 @@ class FirmData {
                 document.getElementById("data").innerHTML = "" 
                 self.getFirm(document.getElementById("input_name").value).then(response => response.json()).then(response => {
                     response = JSON.parse(response);
-                    self.returnTemplate(response)
+                    self.returnTemplate(response);
                 })
             }
         })
@@ -66,43 +67,53 @@ class FirmData {
     // traintement de l'affichage du retour API
     returnTemplate = (response) => {
         response.data.forEach(elem => {
-            document.getElementById("data").innerHTML += "<br /><br /><br /><b>ENTREPRISES  : </b><br /><br />"
+            document.getElementById("data").innerHTML += "<br />"
+            document.getElementById("data").innerHTML += "<br />"
+            document.getElementById("data").innerHTML += "<br />----------------------------------------------------------------------------------------------------------------------------------------------------"
+            document.getElementById("data").innerHTML += "<br />----------------------------------------------------------------------------------------------------------------------------------------------------"
+            console.log(elem)
             if(elem.content != undefined) {
-                let eleme = JSON.parse(elem.content);
-          
-                eleme.forEach(element => {
-                  
-                    if(Array.isArray(element)) {
-                        element.forEach(eleme => {
-                            document.getElementById("data").innerHTML += "<br /><b>denomination : </b>" + eleme.denomination
-                        })
-                        
-                    }
-                    else {
-                        if(element.nom != undefined) {
-                            document.getElementById("data").innerHTML += "<br /><b>nom : </b>" + element.nom
-                        }
+                let base = JSON.parse(elem.content)
+                let data_first_query = base.query_firm;
 
-                        if(element.nom_complet != undefined) {
-                            document.getElementById("data").innerHTML += "<br /><b>nom_complet : </b>" + element.nom_complet
+                document.getElementById("data").innerHTML += "<br />"
+                document.getElementById("data").innerHTML += "<br />"
+             
+                document.getElementById("data").innerHTML += "<br /><b>siren : " + data_first_query.siren
+                document.getElementById("data").innerHTML += "<br /><b>domaine_activite : </b>" + data_first_query.domaine_activite + "<br />"
+                document.getElementById("data").innerHTML += "<br /><b>denomination : </b>" + data_first_query.denomination
+                if(base.directors != undefined) {
+                    base.directors.forEach(directordata => {
+                        document.getElementById("data").innerHTML += "<br />"
+                        document.getElementById("data").innerHTML += "<br />---------------------------------------------------------"
+                        document.getElementById("data").innerHTML += "<br />"
+                        if(directordata.nom != undefined) {
+                            document.getElementById("data").innerHTML += "<br /><b>nom : </b>" + directordata.nom
                         }
-
-                        if(element.qualite != undefined) {
-                            document.getElementById("data").innerHTML += "<br /><b>qualite : </b>" + element.qualite
+                        if(directordata.nom_complet != undefined) {
+                            document.getElementById("data").innerHTML += "<br /><b>nom_complet : </b>" + directordata.nom_complet
                         }
-                    }
-                    if(element.resultats != undefined) {
-                        element.resultats.forEach(elemento => {
-                            document.getElementById("data").innerHTML += "<br />"
-                            document.getElementById("data").innerHTML += "<br />"
-                         
-                            document.getElementById("data").innerHTML += "<br /><b>siren : " + elemento.siren
-                            document.getElementById("data").innerHTML += "<br /><b>domaine_activite : </b>" + elemento.domaine_activite + "<br />"
-                        })
-                    }
-                })   
+                        if(directordata.qualite != undefined) {
+                            document.getElementById("data").innerHTML += "<br /><b>qualite : </b>" + directordata.qualite
+                        }
+                        if(directordata.resultats  != undefined) {
+                            document.getElementById("data").innerHTML += "<br /><br /><b>ENTREPRISES  : </b><br /><br />"
+                            directordata.resultats.forEach(directorentreprise => {
+                                if(directorentreprise.siren != undefined) {
+                                    document.getElementById("data").innerHTML += "<br /><b>siren : </b>" + directorentreprise.siren
+                                }
+                                if(directorentreprise.denomination != undefined) {
+                                    document.getElementById("data").innerHTML += "<br /><b>denomination : </b>" + directorentreprise.denomination
+                                }
+                                if(directorentreprise.domaine_activite != undefined) {
+                                    document.getElementById("data").innerHTML += "<br /><b>domaine_activite : </b>" + directorentreprise.domaine_activite
+                                }
+                            })
+                        }
+                    })
+                }
             }
-        })
+        })      
     }
 }
 const firmData = new FirmData();
