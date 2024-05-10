@@ -8,6 +8,16 @@ Projet effectué avec docker
 
 Utilisatisation de socket.io sur l'app
 
+Pour rendre le projet fonctionnel il faut 
+- créer un compte papers : https://www.pappers.fr/
+    - récupérer le token API
+    - la mettre dans le .env
+- récupérer une url de webhook public [webhook.site](https://webhook.site)
+    - récupérer la token et l'id
+    - les mettre dans le .env
+- squelette de connexion à une bdd créé :
+    - il faut renseigner les infos du .env concernant la bdd
+    
 Pour run le projet, il faut taper les lignes suivantes
 - docker-compose build
 - docker-compose up
