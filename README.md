@@ -1,4 +1,4 @@
-# Ce projet permet de récupérer les informations entreprises sur le site Pappers, de les poster sur un Webhook et de les récupérer sur le front
+# Ce projet permet de récupérer les informations entreprises sur le site Pappers, de les poster sur un Webhook et de les récupérer sur le front présent dans le repo
 
 Projet effectué avec docker
 3 services créés :
