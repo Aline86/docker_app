@@ -18,6 +18,13 @@ jobs:
           environment:
             COMPOSE_VERSION: 'v2.25.0'
           command: |
+          
+            docker container run --network container:circleci-demo-docker_contacts_1 \
+              docker.io/jwilder/dockerize \
+              -wait http://localhost:8080/healthcheck \
+              -wait-retry-interval 2s \
+              -timeout 20s
+
             docker-compose build
             docker-compose up -d
   deploy:
