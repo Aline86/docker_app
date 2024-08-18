@@ -5,7 +5,7 @@ orbs:
   node: circleci/node@5
 jobs:
   docker:
-    - image: cimg/base:2022.06
+    image: cimg/base:2022.06
     steps:
       # ... steps for building/testing app ...
       - setup_remote_docker
