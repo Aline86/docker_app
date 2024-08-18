@@ -13,7 +13,7 @@ jobs:
           path: ~/project
       - node/install-packages:
           pkg-manager: npm
-            - run:
+      - run:
           name: Install Docker Compose
           environment:
             COMPOSE_VERSION: 'v2.25.0'
