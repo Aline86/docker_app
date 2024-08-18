@@ -52,8 +52,7 @@ workflows:
       - test-node
       - docker
       - deploy:
-          requires:
-            - test-node
+         
   docker:
     - image: cimg/go:1.17
   resource_class: xlarge
