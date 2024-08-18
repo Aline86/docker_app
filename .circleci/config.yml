@@ -1,34 +1,70 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:node:back
-version: 2.1
-orbs:
-  node: circleci/node@5
-jobs:
-  test-node:
-    # Install node dependencies and run tests
-    executor: node/default
-    working_directory: ~/project/back
-    steps:
-      - checkout:
-          path: ~/project
-      - node/install-packages:
-          pkg-manager: npm
-      - run:
-          name: Run tests
-          command: echo \"No test specified in package.json\"
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
-    steps:
-      # Replace this with steps to deploy to users
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
-workflows:
-  build-and-test:
-    jobs:
-      - test-node
-    # - deploy:
-    #     requires:
-    #       - test-node
+version: '4'
+
+services:
+  app:
+    build: 
+      context: ./
+      dockerfile: ./back/Dockerfile.backend
+    ports:
+      - 3000:3000
+      - 447:447
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    env_file: .env
+
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - nodejs-mysql-network
+
+  mysqldb:
+    image: mysql:8.0.33
+
+    expose:
+      - "3306"
+    ports:
+      - 3306:3306
+
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - nodejs-mysql-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+    
+  front:
+    build:
+      context: ./
+      dockerfile: front/Dockerfile.frontend
+    container_name: front
+    links:
+      - app
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    #  - "443:443"
+    volumes:
+      - ./front:/usr/share/nginx/html
+    networks:
+      - nodejs-mysql-network
+
+volumes:
+  mysql-data:
+  front:
+
+networks:
+  nodejs-mysql-network:
+    name: nodejs-mysql-network
+    driver: bridge
