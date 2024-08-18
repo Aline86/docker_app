@@ -19,7 +19,6 @@ jobs:
   # This is an example deploy job, not actually used by the workflow
   docker:
     - image: cimg/go:1.17
-    resource_class: xlarge
     steps:
       - checkout
       # ... steps for building/testing app ...
