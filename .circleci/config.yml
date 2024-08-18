@@ -19,23 +19,23 @@ jobs:
   # This is an example deploy job, not actually used by the workflow
   docker:
     - image: cimg/go:1.17
-  resource_class: xlarge
-    steps:
-      - checkout
-      # ... steps for building/testing app ...
-    
-      - setup_remote_docker:
-          docker_layer_caching: true
-    
-      # build and push Docker image
-      - run: |
-          TAG=0.1.$CIRCLE_BUILD_NUM
-          docker build -t CircleCI-Public/circleci-demo-docker:$TAG .
-          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker push CircleCI-Public/circleci-demo-docker:$TAG | docker-compose build | docker-compose up
-    
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+    resource_class: xlarge
+      steps:
+        - checkout
+        # ... steps for building/testing app ...
+      
+        - setup_remote_docker:
+            docker_layer_caching: true
+      
+        # build and push Docker image
+        - run: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t CircleCI-Public/circleci-demo-docker:$TAG .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push CircleCI-Public/circleci-demo-docker:$TAG | docker-compose build | docker-compose up
+      
+            name: deploy
+            command: '#e.g. ./deploy.sh'
 
 workflows:
   build-and-test:
