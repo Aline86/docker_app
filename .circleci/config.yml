@@ -9,7 +9,7 @@ jobs:
     working_directory: ~/project/back
     steps:
       - checkout:
-          path: ~/project
+          path: ~/project/back
       - node/install-packages:
           pkg-manager: npm
       - run:
