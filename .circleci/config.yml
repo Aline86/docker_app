@@ -6,18 +6,18 @@ jobs:
   test-node:
     executor: node/default
     working_directory: ~/project/back
-    steps:
-      - checkout:
-          path: ~/project/back
-      - node/install-packages:
-          pkg-manager: npm
-      - run:
-          name: Run tests
-          command: echo \"No test specified in package.json\"
+  steps:
+    - checkout:
+        path: ~/project/back
+    - node/install-packages:
+        pkg-manager: npm
+    - run:
+        name: Run tests
+        command: echo \"No test specified in package.json\"
     
     
     # This is an example deploy job, not actually used by the workflow
-     docker:
+    docker:
       - image: cimg/go:1.17
     resource_class: xlarge
     steps:
