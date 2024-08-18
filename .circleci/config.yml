@@ -23,8 +23,6 @@ jobs:
             chmod +x ~/docker-compose
             mv ~/docker-compose ~/.docker/cli-plugins/docker-compose
             - setup_remote_docker
-
-
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
@@ -37,6 +35,7 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - deploy
-      requires:
-        - test-node
+      - test-node
+      - deploy:
+          requires:
+            - test-node
