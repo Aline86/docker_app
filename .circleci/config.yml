@@ -1,76 +1,43 @@
+# This config was automatically generated from your source code
+# Stacks detected: deps:node:back
 version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
-  
-  build:
-    app:
-      context: ./
-      dockerfile: ./back/Dockerfile.backend
-      depends_on:
-        mysqldb:
-          condition: service_healthy
-      env_file: .env
-  
-      environment:
-        - DB_HOST=${DB_HOST}
-        - DB_PORT=${PORT}
-        - DB_NAME=${DB_NAME}
-        - DB_USERNAME=${DB_USERNAME}
-        - DB_PASSWORD=${DB_PASSWORD}
-      networks:
-        - nodejs-mysql-network
-  
-    mysqldb:
-      image: mysql:8.0.33
-  
-      environment:
-        - MYSQL_DATABASE=${DB_NAME}
-        - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      volumes:
-        - mysql-data:/var/lib/mysql
-      networks:
-        - nodejs-mysql-network
-      healthcheck:
-        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-        retries: 10
-        interval: 3s
-        timeout: 30s
-      
-    front:
-      build:
-        context: ./
-        dockerfile: front/Dockerfile.frontend
-      container_name: front
-      links:
-        - app
-      image: nginx:latest
-      restart: unless-stopped
-      
-      volumes:
-        - ./front:/usr/share/nginx/html
-      networks:
-        - nodejs-mysql-network
-
-volumes:
-  mysql-data:
-  front:
-  
-  networks:
-    nodejs-mysql-network:
-      name: nodejs-mysql-network
-      driver: bridge
-deploy:
-    # This is an example deploy job, not actually used by the workflow
-    mysql:
-      image: mysql:8.0.33
-    front:
-      image: nginx:latest
+  test-node:
+    # Install node dependencies and run tests
+    executor: node/default
+    working_directory: ~/project/back
     steps:
       - checkout:
           path: ~/project
+      - node/install-packages:
+          pkg-manager: npm
+            - run:
+          name: Install Docker Compose
+          environment:
+            COMPOSE_VERSION: 'v2.25.0'
+          command: |
+            curl -sSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
+            mkdir -p ~/.docker/cli-plugins
+            chmod +x ~/docker-compose
+            mv ~/docker-compose ~/.docker/cli-plugins/docker-compose
+            - setup_remote_docker
+
+
+  deploy:
+    # This is an example deploy job, not actually used by the workflow
+    docker:
+      - image: cimg/base:stable
+    steps:
       # Replace this with steps to deploy to users
       - run:
           name: deploy
-          command: docker-compose build / docker-compose up
-          
+          command: '#e.g. ./deploy.sh'
+workflows:
+  build-and-test:
+    jobs:
+      - test-node
+     - deploy:
+         requires:
+           - test-node
