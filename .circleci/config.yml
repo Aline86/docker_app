@@ -4,35 +4,30 @@ version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
-  build:
-    docker:
-      - image: cimg/base:2022.06
-      steps:
-        # ... steps for building/testing app ...
-        - setup_remote_docker
-    test-node:
-      # Install node dependencies and run tests
-      executor: node/default
-      working_directory: ~/project/back
-      steps:
-        - checkout:
-            path: ~/project
-        - node/install-packages:
-            pkg-manager: npm
-        - run:
-            name: Install Docker Compose
-            environment:
-              COMPOSE_VERSION: 'v2.25.0'
-            command: |
-            
-              docker container run --network container:circleci-demo-docker_contacts_1 \
-                docker.io/jwilder/dockerize \
-                -wait http://localhost:8080/healthcheck \
-                -wait-retry-interval 2s \
-                -timeout 20s
   
-              docker-compose build
-              docker-compose up -d
+  test-node:
+    # Install node dependencies and run tests
+    executor: node/default
+    working_directory: ~/project/back
+    steps:
+      - checkout:
+          path: ~/project
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Install Docker Compose
+          environment:
+            COMPOSE_VERSION: 'v2.25.0'
+          command: |
+          
+            docker container run --network container:circleci-demo-docker_contacts_1 \
+              docker.io/jwilder/dockerize \
+              -wait http://localhost:8080/healthcheck \
+              -wait-retry-interval 2s \
+              -timeout 20s
+
+            docker-compose build
+            docker-compose up -d
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
@@ -45,7 +40,13 @@ jobs:
 workflows:
   build-and-test:
     jobs:
+          # Install via apk on alpine based images
+      - run:
+          name: Install Docker client
+          command: apk add docker-cli
       - test-node
       - deploy:
           requires:
             - test-node
+            - setup_remote_docker:
+              version: edge
