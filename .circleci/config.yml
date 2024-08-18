@@ -4,7 +4,6 @@ version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
-  
   test-node:
     # Install node dependencies and run tests
     executor: node/default
@@ -14,7 +13,6 @@ jobs:
           path: ~/project
       - node/install-packages:
           pkg-manager: npm
-      - run:
           name: Install Docker Compose
           environment:
             COMPOSE_VERSION: 'v2.25.0'
