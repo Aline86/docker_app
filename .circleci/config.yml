@@ -4,6 +4,11 @@ version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
+  docker:
+    - image: cimg/base:2022.06
+  steps:
+    # ... steps for building/testing app ...
+    - setup_remote_docker
   test-node:
     # Install node dependencies and run tests
     executor: node/default
