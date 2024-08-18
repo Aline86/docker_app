@@ -30,7 +30,5 @@ workflows:
       - deploy:
           requires:
             - test-node
-            - setup_remote_docker:
-              name: Install Docker client
-              command: apk add docker-cli
+            - setup_remote_docker
 
