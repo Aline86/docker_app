@@ -17,9 +17,9 @@ jobs:
           name: Install Docker Compose
           environment:
             COMPOSE_VERSION: 'v2.25.0'
-          command: 
-            - docker-compose build
-            - docker-compose up -d
+          command: |
+            docker-compose build
+            docker-compose up -d
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
