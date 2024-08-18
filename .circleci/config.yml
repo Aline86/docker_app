@@ -16,8 +16,6 @@ jobs:
           name: Run tests
           command: echo \"No test specified in package.json\"
     docker:
-      - image: cimg/go:1.17
-      resource_class: xlarge
       steps:
         - checkout
         # ... steps for building/testing app ...
