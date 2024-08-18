@@ -46,13 +46,9 @@ workflows:
     jobs:
       - test-node
       - docker
-  
-  build-and-test:
-    jobs:
-      - test-node
-      - docker
       - deploy:
-         
+          requires:
+            - test-node
   docker:
     - image: cimg/go:1.17
   resource_class: xlarge
