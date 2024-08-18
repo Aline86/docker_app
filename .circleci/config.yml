@@ -1,4 +1,4 @@
-version: 4
+version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
@@ -13,7 +13,7 @@ jobs:
       mysqldb:
         condition: service_healthy
     env_file: .env
-
+    
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${PORT}
@@ -22,28 +22,26 @@ jobs:
       - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - nodejs-mysql-network
-
-  mysqldb:
+  mysql:
     image: mysql:8.0.33
-
-    expose:
-      - "3306"
-    ports:
-      - 3306:3306
-
-    environment:
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - nodejs-mysql-network
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      retries: 10
-      interval: 3s
-      timeout: 30s
-    
+  
+      expose:
+        - "3306"
+      ports:
+        - 3306:3306
+  
+      environment:
+        - MYSQL_DATABASE=${DB_NAME}
+        - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      volumes:
+        - mysql-data:/var/lib/mysql
+      networks:
+        - nodejs-mysql-network
+      healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        retries: 10
+        interval: 3s
+        timeout: 30s
   front:
     build:
       context: ./
@@ -60,30 +58,17 @@ jobs:
       - ./front:/usr/share/nginx/html
     networks:
       - nodejs-mysql-network
-
-volumes:
-mysql-data:
-front:
-
-networks:
-nodejs-mysql-network:
-  name: nodejs-mysql-network
-  driver: bridge
-      
-workflows:
-  build-and-test:
-    jobs:
-      - app
-      - mysql
-      - front
       
 deploy:
     # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
+    mysql:
+      image: mysql:8.0.33
+    front:
+      image: nginx:latest
     steps:
       # Replace this with steps to deploy to users
       - run:
           name: deploy
-          command: '#e.g. ./deploy.sh'
+          command: docker-compose build / docker-compose up
+
          
