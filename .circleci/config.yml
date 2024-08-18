@@ -34,8 +34,8 @@ jobs:
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push CircleCI-Public/circleci-demo-docker:$TAG | docker-compose build | docker-compose up
       
-            name: deploy
-            command: '#e.g. ./deploy.sh'
+      name: deploy
+      command: '#e.g. ./deploy.sh'
 
 workflows:
   build-and-test:
