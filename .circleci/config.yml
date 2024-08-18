@@ -2,36 +2,26 @@
 version: 2.1
 orbs:
   node: circleci/node@5
+version: 2.1
+
 jobs:
-  test-node:
-    # Install node dependencies and run tests
-    executor: node/default
-    working_directory: ~/project/back
-    steps:
-      - checkout:
-          path: ~/project
-      - node/install-packages:
-          pkg-manager: npm
-      - run:
-          name: Run tests
-          command: echo \"No test specified in package.json\"
+  build:
     docker:
       - image: cimg/go:1.17
-      resource_class: xlarge
-      steps:
-        - checkout
-        # ... steps for building/testing app ...
-  
-        - setup_remote_docker:
-            docker_layer_caching: true
-  
-        # build and push Docker image
-        - run: |
-            TAG=0.1.$CIRCLE_BUILD_NUM
-            docker build -t CircleCI-Public/circleci-demo-docker:$TAG .
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push CircleCI-Public/circleci-demo-docker:$TAG | docker-compose build | docker-compose up
-     
+    resource_class: xlarge
+    steps:
+      - checkout
+      # ... steps for building/testing app ...
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      # build and push Docker image
+      - run: |
+          TAG=0.1.$CIRCLE_BUILD_NUM
+          docker build -t CircleCI-Public/circleci-demo-docker:$TAG .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push CircleCI-Public/circleci-demo-docker:$TAG | docker-compose build | docker-compose up
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
@@ -44,7 +34,6 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - test-node
       - docker
       - deploy:
           requires:
