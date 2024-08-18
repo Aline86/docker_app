@@ -70,10 +70,5 @@ jobs:
       name: nodejs-mysql-network
       driver: bridge
 
-
-workflows:
-  build-and-deploy:
-    jobs:
-      - build
-      - deploy
+      
          
