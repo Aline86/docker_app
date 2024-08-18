@@ -46,5 +46,5 @@ workflows:
       - deploy:
           requires:
             - test-node
-            - setup_remote_docker:
-              version: edge
+            - setup_remote_docker
+
